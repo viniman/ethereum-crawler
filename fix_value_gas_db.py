@@ -33,8 +33,8 @@ def update_transaction(index, tx):
         tx['gas'] = gas_used
 
     except Exception:
-        print('\nError:', tx['hash'], 'Value:',tx['value'])
-        time.sleep(60)
+        print('\nError:', tx['hash'])
+        time.sleep(70)
         transactions.to_csv(write_path, index=False)
         update_transaction(index, tx)
         pass
