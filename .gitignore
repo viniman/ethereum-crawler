@@ -1,3 +1,9 @@
+# changed for the project in specific
+dataset_fix/
+dataset_hash/
+
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
