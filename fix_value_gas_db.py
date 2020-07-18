@@ -6,16 +6,23 @@ import time
 import sys
 
 
+# suppress scientific notation
+pd.options.display.float_format = '{:.10f}'.format #'{:,.10f}'.format
 
 
-def update_transaction(index, tx):
-    print(index, end=' ', flush=True)
+#count
+count = 0
 
-    url = url_view_tx + tx['hash']
 
-    #print(tx['hash'], tx['value'], end=' ')
 
-    try:
+def get_value_gas(hash):
+    global count
+    print(count, end=' ', flush=True)
+    count+=1
+
+    url = url_view_tx + hash
+    
+    try:   
         req = Request(url,headers=hdr)
         page = urlopen(req)
         soup = BeautifulSoup(page, 'html.parser')
@@ -26,18 +33,14 @@ def update_transaction(index, tx):
         gas_used = soup.select_one('#ContentPlaceHolder1_spanGasUsedByTxn')
         gas_used = gas_used.text.split(' ', 1)[0].replace(',', '')
 
-        #print('value:', tx['value'], value)
-        #print('gas:', tx['gas'], gas_used)
-
-        tx['value'] = value
-        tx['gas'] = gas_used
-
-    except Exception:
-        print('\nError:', tx['hash'])
-        time.sleep(70)
-        transactions.to_csv(write_path, index=False)
-        update_transaction(index, tx)
+    except Exception as ex:
+        print(ex)
+        print('\nError:', hash)
+        time.sleep(60)
+        get_value_gas(hash)
         pass
+
+    return value, gas_used
 
 
 
@@ -48,7 +51,7 @@ instance = int(sys.argv[1])
 
 url_view_tx = 'https://etherscan.io/tx/0x'
 read_path = 'dataset_hash/dataset_hash_to_fix_' + str(instance) + '.csv'
-write_path = 'dataset_fix/dataset_fix_value_gas_' + str(instance) + '.csv'
+path = 'dataset_fix/dataset_fix_value_gas_'
 hdr = {'User-Agent': 'Mozilla/5.0'}
 
 
@@ -62,26 +65,46 @@ hdr = {'User-Agent': 'Mozilla/5.0'}
 # 7*10 = 70 datasets: 0 .. 69
 
 
-transactions = pd.read_csv(read_path)
-print(transactions.count())
+transactions = pd.read_csv(read_path, nrows=50)
+
+
+# divisao do dataset em 10 partes
+chunks = 10
+div = int(len(transactions)/chunks)
+
+print ('tamanho', len(transactions))
+
+
+
 
 transactions['value'] = np.nan
 transactions['gas'] = np.nan
 
-start = time.time()
 
-for index, tx in transactions.iterrows():
-    update_transaction(index, tx)
 
+time_geral = time.time()
+
+
+for i in range(0,chunks):
+    if(i < chunks-1):
+        txs = transactions[i*div:(i+1)*div]
+    else:
+        txs = transactions[i*div:]
+    #print(txs)
+
+    start = time.time()
+    txs['value'], txs['gas'] = zip(*txs.apply(lambda row: get_value_gas(row['hash']), axis=1))
+    end = time.time()
+
+    print('\n---------------------------------------------------')
+    print('Time:', end - start)
     
+    write_path = path + str(instance) + '_chunk_' + str(i) + '.csv'
+    txs.to_csv(write_path, index=False)
 
+    print('\n+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+')
+    print('Time Geral:', time.time() - time_geral)
     
-
-    
-end = time.time()
-print(end - start)
-
-transactions.to_csv(write_path, index=False)
 
 
 
