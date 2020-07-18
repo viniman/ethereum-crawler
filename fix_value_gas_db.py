@@ -65,7 +65,7 @@ hdr = {'User-Agent': 'Mozilla/5.0'}
 # 7*10 = 70 datasets: 0 .. 69
 
 
-transactions = pd.read_csv(read_path, nrows=50)
+transactions = pd.read_csv(read_path)
 
 
 # divisao do dataset em 10 partes
