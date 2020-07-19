@@ -37,7 +37,7 @@ def get_value_gas(hash):
         print(ex)
         print('\nError:', hash)
         time.sleep(60)
-        get_value_gas(hash)
+        value, gas_used = get_value_gas(hash)
         pass
 
     return value, gas_used
