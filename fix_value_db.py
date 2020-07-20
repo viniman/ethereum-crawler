@@ -38,7 +38,7 @@ def get_value(hash):
         print(ex)
         print('\nError:', hash)
         time.sleep(60)
-        get_value(hash)
+        value = get_value(hash)
         pass
 
     return value
