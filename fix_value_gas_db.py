@@ -47,6 +47,7 @@ def get_value_gas(hash):
 # pass from command line arguments
 # pass the number of the instance
 instance = int(sys.argv[1])
+init = int(sys.argv[2])
 
 
 url_view_tx = 'https://etherscan.io/tx/0x'
@@ -85,7 +86,7 @@ transactions['gas'] = np.nan
 time_geral = time.time()
 
 
-for i in range(0,chunks):
+for i in range(init,chunks):
     if(i < chunks-1):
         txs = transactions[i*div:(i+1)*div]
     else:
