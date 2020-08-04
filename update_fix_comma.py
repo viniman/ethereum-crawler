@@ -18,6 +18,8 @@ database = {
     "port": "5432"
 }
 
+
+# coluna para atualizar
 column = 'gas'
 
 engine = create_engine('postgresql://postgres:' + database['passwd'] + '@localhost:5432/' + database['db'])
@@ -27,7 +29,7 @@ connection = psycopg2.connect(host=database['host'], database=database['db'], us
 cursor = connection.cursor()
 
 
-df = pd.read_sql("SELECT hash, {} FROM transactions4 WHERE {} like '%%,%%'".format(column, column), con=engine)
+df = pd.read_sql("SELECT hash, {} FROM {} WHERE {} like '%%,%%'".format(column, database['table'], column), con=engine)
 
 for index, transaction in df.iterrows():
 
@@ -35,7 +37,7 @@ for index, transaction in df.iterrows():
     transaction[column] = transaction[column].replace(',', '')
     print(transaction[column])
 
-    sql_instruction = "UPDATE transactions4 SET {} = '{}' WHERE hash ='{}';".format(
+    sql_instruction = "UPDATE {} SET {} = '{}' WHERE hash ='{}';".format(database['table'],
                 column, transaction[column], transaction['hash'])
     
     cursor.execute(sql_instruction)
