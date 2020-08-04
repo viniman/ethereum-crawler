@@ -30,16 +30,38 @@ def get_files_path(path='dataset_fix/'):
     all_files = os.path.join(path, "*.csv")
     return all_files
 
+
+def list_of_csv(dir_path: str):
+	"""get list of all csv files in given path
+
+	Args:
+		dir_path(str): absolute path to the source directory
+	Returns:
+	"""
+
+	files = []
+	#files.clear()
+	#data.clear()
+
+	try:
+		for name in os.listdir(dir_path):
+			if '.csv' in name:
+				files.append(os.path.join(dir_path, name))
+	except OSError:
+		raise SystemExit(f'Path does not exist or you need to wrap the path inside quotes.')
+	
+	return files
+
 def update_transactions(df):
     connection = psycopg2.connect(host=database['host'], database=database['db'],
                                            user=database['user'], password=database['passwd'])
     cursor = connection.cursor()
 
     for index, tx in df.iterrows():
-        print(index, end=' ')
+        print(index, end=' ', flush=True)
 
-        sql_instruction = "UPDATE {0} SET value = \'{1}\' WHERE hash =\'{4}\';".format(
-            database['table'], tx['value']
+        sql_instruction = "UPDATE {} SET value = \'{}\' WHERE hash =\'{}\';".format(
+            database['table'], tx['value'], tx['hash']
         )
 
         cursor.execute(sql_instruction)
@@ -52,7 +74,8 @@ def update_transactions(df):
 pega o caminho para os arquivos csv
 atualiza as transações de cada arquivo
 '''
-files_path = get_files_path()
+files_path = list_of_csv('fix_value')
+print(files_path)
 for index, file_path in zip(range(0,len(files_path)), files_path):
     print('-'*50)
     print ('CSV', index)
