@@ -25,7 +25,10 @@ with psycopg2.connect(host="localhost", database="ethscan", user="postgres", pas
     for hash in hashes:
         url = 'https://api.etherscan.io/api?module=transaction&action=gettxreceiptstatus&txhash=0x{}&apikey=QMRK95WAD8NBB41E7DD4EYHTDVNE5PBF6U'.format(hash)
         response = json.loads(opener.open(url).read().decode())['result']['status']
-        sql = "UPDATE {} SET receipt_status = '{}' WHERE hash = '{}'".format(table, response, hash)
-        print(sql, response)
-        cur.execute(sql)
-        conn.commit()
+        if (response == '0' or response == '1'):
+            sql = "UPDATE {} SET receipt_status = '{}' WHERE hash = '{}'".format(table, response, hash)
+            print(sql, response)
+            cur.execute(sql)
+            conn.commit()
+        else:
+            print('Transaction {} not uptated.'.format(hash))
