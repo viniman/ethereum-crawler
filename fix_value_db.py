@@ -46,7 +46,10 @@ def get_value(hash):
 
 
 url_view_tx = 'https://etherscan.io/tx/0x'
+
+# dataset com gas já atualizado, faltando o value:
 read_path = '../DataScience/ethereum/datasets/dataset_value_gas_20200717.csv'
+# caminho para os chunks serem salvos
 path = '../DataScience/ethereum/datasets/dataset_value_gas_20200718_fix_'
 hdr = {'User-Agent': 'Mozilla/5.0'}
 
