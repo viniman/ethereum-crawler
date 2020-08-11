@@ -12,6 +12,14 @@ api_keys = ['YZVQYCEXE9FC7HEG22YE2S4X8CGG6QX86G',
             '53KDADTQF4TKHXFJMQEKYUYXDEZ4F75Q8Y',
             'ABGJSQIDI2UMGJ89IIGEKA5N1WDQ98Z3CI']
 
+
+
+# instance - 0 to n-1
+instance_number = 9
+# limit for each instance
+limit = 30000
+
+
 counter = 0
 
 def get_api_key():
@@ -37,12 +45,12 @@ with psycopg2.connect(host="localhost", database="ethscan", user="postgres", pas
 
     cur = conn.cursor()
 
-    transactions_hash = "select hash from {} where tx_updated and receipt_status is null".format(table)
+    transactions_hash = "select hash from {} where tx_updated and receipt_status is null LIMIT {} OFFSET {}".format(table, limit, instance_number*limit)
     cur.execute(transactions_hash)
 
     hashes = [ hash[0] for hash in cur.fetchall() ]
 
-    shuffle(hashes)
+    #shuffle(hashes)
 
 
 
