@@ -54,10 +54,6 @@ with psycopg2.connect(host="localhost", database="ethscan", user="postgres", pas
 
     cur = conn.cursor()
 
-    count = "select count(hash) from transactions4 where receipt_status is not null and block_number is null and tx_updated".format(table)
-    cur.execute(count)
-    print(cur.fetchall())
-
     transactions_hash = "select hash from transactions4 where receipt_status is not null and block_number is null and tx_updated".format(table)
     cur.execute(transactions_hash)
 
